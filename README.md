@@ -1,50 +1,265 @@
-# Prueba Tecnica Frontend - Preparacion de Entorno
+# Prueba Tecnica Frontend - To Do App Ionic
 
-Este repositorio quedó preparado para comenzar la prueba tecnica de Accenture con una base real de `Ionic + Angular + Cordova`.
+Documentacion tecnica del entregable desarrollado para la prueba de Accenture con `Ionic 8`, `Angular 20` y `Cordova`.
 
-## Estado actual
+Verificacion realizada el `2026-04-26`.
 
-- Repositorio Git inicializado.
-- Configuracion de `npm` ajustada para usar cache local en el workspace.
-- Starter generado en `todo-accenture/`.
-- Integracion de Cordova habilitada.
-- Compilacion web validada con `npm run build`.
+## 1. Resumen
 
-## Estructura
+La aplicacion implementa una experiencia de gestion de tareas con categorias, filtros y persistencia local. El proyecto esta pensado para correr como aplicacion web y como base para empaquetado movil con Cordova.
 
-- Proyecto principal: `todo-accenture/`
-- Configuracion local de npm: `.npmrc`
-- Exclusiones de Git: `.gitignore`
+## 2. Alcance funcional
 
-## Herramientas validadas
+- Crear tareas.
+- Editar tareas.
+- Completar tareas.
+- Eliminar tareas.
+- Crear categorias.
+- Editar categorias.
+- Eliminar categorias.
+- Asignar categoria a una tarea.
+- Filtrar por categoria.
+- Filtrar por estado: `Todo`, `Pendiente`, `Completado`.
+- Persistir informacion con `localStorage`.
+- Consumir feature flags desde `Firebase Remote Config` con valores por defecto locales.
 
-- Git: instalado
-- Node.js: `v22.19.0`
-- npm: `10.9.3`
-- Java: detectado (`21.0.8`)
+## 3. Arquitectura
 
-## Faltantes o riesgos a resolver
+### Frontend
 
-- `adb` no esta disponible en `PATH`
-- `sdkmanager` no esta disponible en `PATH`
-- No se detecta `ANDROID_HOME` ni `ANDROID_SDK_ROOT`
-- La exportacion de `IPA` no es posible desde Windows; para `cordova-ios` se necesita macOS con Xcode
-- Cordova Android actual recomienda JDK 17; en esta maquina se detecto Java 21, asi que conviene instalar o apuntar un JDK 17 para evitar incompatibilidades al compilar Android
+- Framework UI: `Ionic Angular`
+- Framework base: `Angular 20`
+- Navegacion: `Angular Router`
+- Estado local: `BehaviorSubject`
+- Persistencia: `localStorage`
+- Integracion remota: `Firebase Remote Config`
+- Empaquetado movil: `Cordova 13`
 
-## Comandos utiles
+### Estructura principal
 
-Desde la raiz:
+- App principal: `todo-accenture/`
+- Ruteo: `todo-accenture/src/app/app-routing.module.ts`
+- Pantalla principal: `todo-accenture/src/app/home/`
+- Servicios de dominio: `todo-accenture/src/app/core/services/`
+- Modelos: `todo-accenture/src/app/core/models/`
+- Entornos: `todo-accenture/src/environments/`
+- Configuracion Cordova: `todo-accenture/config.xml`
+
+### Servicios clave
+
+- `TaskStoreService`: administra CRUD de tareas y actualiza `localStorage`.
+- `CategoryStoreService`: administra CRUD de categorias y sincroniza cambios locales.
+- `LocalStorageService`: encapsula lectura y escritura segura sobre `localStorage`.
+- `FeatureFlagsService`: inicializa Firebase y resuelve flags remotas con fallback local.
+
+## 4. Feature flags
+
+El proyecto ya tiene configuracion funcional para Firebase:
+
+- `enable_task_editing`
+- `show_status_filters`
+
+Comportamiento:
+
+- Si Firebase esta configurado y el entorno soporta Remote Config, la app hace `fetchAndActivate`.
+- Si la inicializacion falla, la app usa valores por defecto locales:
+  - `enableTaskEditing = true`
+  - `showStatusFilters = true`
+
+Archivos relacionados:
+
+- `todo-accenture/src/environments/environment.ts`
+- `todo-accenture/src/environments/environment.prod.ts`
+- `todo-accenture/src/app/core/services/feature-flags.service.ts`
+
+## 5. Ejecucion local
+
+### Requisitos
+
+- `Node.js`
+- `npm`
+
+### Instalacion
 
 ```powershell
-cd .\todo-accenture
-npm install
-npm run build
+& "C:\Program Files\nodejs\npm.cmd" --prefix .\todo-accenture install
 ```
 
-## Siguiente paso recomendado
+### Desarrollo
 
-1. Instalar Android Studio con Android SDK, platform-tools y build-tools.
-2. Configurar `ANDROID_SDK_ROOT` y validar `adb`.
-3. Instalar o configurar JDK 17 para Cordova Android.
-4. Definir si el `IPA` se generara en una Mac local o en un servicio CI con macOS.
-5. Empezar el desarrollo funcional de la To-Do List, categorias, Firebase Remote Config y optimizaciones.
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" --prefix .\todo-accenture run start
+```
+
+### Desarrollo seguro con configuracion local privada
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" --prefix .\todo-accenture run start:secure
+```
+
+### Build web
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" --prefix .\todo-accenture run build
+```
+
+### Build web seguro
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" --prefix .\todo-accenture run build:web:secure
+```
+
+Resultado verificado:
+
+- El build web compilo correctamente el `2026-04-26`.
+- La salida queda en `todo-accenture/www/`.
+
+## 6. Configuracion privada y seguridad
+
+La configuracion sensible del proyecto no queda versionada en Git.
+
+Archivos versionados y seguros:
+
+- `todo-accenture/src/environments/environment.ts`
+- `todo-accenture/src/environments/environment.prod.ts`
+- `todo-accenture/.env.example`
+- `todo-accenture/scripts/generate-local-env.mjs`
+
+Archivos locales ignorados por Git:
+
+- `todo-accenture/.env.local`
+- `todo-accenture/src/environments/environment.local.ts`
+- `todo-accenture/src/environments/environment.local.prod.ts`
+- `todo-accenture/signing/todo-accenture-release.jks`
+- `Entregables/*.apk`
+
+Flujo recomendado:
+
+1. Completar `todo-accenture/.env.local` con los valores privados.
+2. Ejecutar `npm run env:generate:local`.
+3. Usar `start:secure`, `build:web:secure` o `build:android:secure`.
+
+Esto permite mantener fuera del repositorio:
+
+- configuracion real de Firebase
+- llaves locales de firma Android
+- binarios APK entregables
+
+## 7. Estado del empaquetado movil
+
+### Android APK
+
+Acciones realizadas:
+
+- Se instalaron dependencias locales para build movil:
+- `cordova`
+- `cordova-android`
+- `@ionic/cli`
+- Se genero la plataforma Android en `todo-accenture/platforms/android`.
+- Se configuro el entorno local con Android SDK y JDK.
+- Se genero un build `debug` funcional.
+- Se genero un build `release` y se firmo localmente con keystore privado.
+
+Estado actual:
+
+- `APK Debug` generado correctamente.
+- `APK Release firmado` generado correctamente.
+
+Artefacto disponible en:
+
+- `todo-accenture\platforms\android\app\build\outputs\apk\debug\app-debug.apk`
+- `todo-accenture\platforms\android\app\build\outputs\apk\release\app-release-signed.apk`
+- `Entregables\app-debug.apk`
+- `Entregables\app-release-signed.apk`
+
+Tamano del archivo generado:
+
+- `app-debug.apk`: `4,614,246 bytes`
+- `app-release-signed.apk`: `3,784,784 bytes`
+
+Comandos usados para validar y construir:
+
+```powershell
+Set-Location .\todo-accenture
+.\node_modules\.bin\cordova.cmd requirements android
+.\node_modules\.bin\cordova.cmd build android --debug
+.\node_modules\.bin\cordova.cmd build android --release
+```
+
+Notas tecnicas relevantes:
+
+- En este entorno fue necesario usar una ruta corta de Windows para evitar fallos nativos de Cordova al crear la plataforma.
+- Los plugins Cordova declarados originalmente en `config.xml` se retiraron porque bloqueaban la preparacion del proyecto y no eran necesarios para la funcionalidad principal de la prueba.
+- El `APK Release` final se firma con un keystore local ignorado por Git.
+- Sin ese keystore no se deben publicar actualizaciones futuras de la app firmada.
+
+### iOS IPA
+
+Estado actual:
+
+- `IPA` no se genera localmente en este equipo Windows.
+- El workflow de GitHub Actions queda preparado, pero no se puede completar sin cuenta Apple Developer, certificados y provisioning profile.
+
+Motivo tecnico:
+
+- Cordova iOS requiere `macOS`, `Xcode`, toolchain de firma de Apple y certificados/perfiles de aprovisionamiento.
+
+Recomendacion de implementacion:
+
+- Usar `GitHub Actions` con runner `macOS`.
+
+Motivos:
+
+- GitHub Actions ofrece runners `macOS` hospedados por GitHub y es una opcion generalista y mantenible para el repo.
+- GitHub permite publicar el `IPA` como artifact descargable del workflow.
+- Appflow sigue soportando builds nativos para proyectos `Cordova`, pero su CLI esta orientado a clientes enterprise y las ventas de planes enterprise fueron descontinuadas, por lo que no es la opcion mas conveniente para una configuracion nueva.
+
+Opciones reales para generar el `IPA`:
+
+1. Clonar el repo en una Mac con `Xcode`.
+2. Usar `GitHub Actions` sobre runner `macOS`.
+3. Usar `Appflow` solo si ya cuentas con acceso activo a esa plataforma y certificados cargados.
+
+Comando de referencia en macOS:
+
+```bash
+cd todo-accenture
+./node_modules/.bin/cordova platform add ios
+./node_modules/.bin/cordova build ios
+```
+
+## 7. Calidad y mantenibilidad
+
+- Separacion clara entre UI, almacenamiento local y feature flags.
+- Uso de `BehaviorSubject` para estado observable simple y suficiente para el alcance.
+- Fallback seguro cuando Firebase no responde.
+- Seed data inicial para mejorar demo y evaluacion funcional.
+- Build web validado como smoke test tecnico.
+
+## 8. Publicacion en GitHub
+
+El repositorio puede publicarse sin comprometer cuentas o credenciales porque:
+
+- `.env.local` queda ignorado.
+- los `environment.local*.ts` quedan ignorados.
+- el keystore Android queda ignorado.
+- los `APK` copiados en `Entregables/` quedan ignorados.
+- el workflow iOS usa solo `GitHub Secrets` y no contiene secretos hardcodeados.
+
+## 9. Riesgos y recomendaciones
+
+- El proyecto ya esta listo para demostrar logica funcional y build Android.
+- Para iOS, el limite real sigue siendo la cuenta Apple Developer y la firma de Apple.
+- Se recomienda mover el keystore a una ubicacion privada fuera del proyecto despues de la entrega.
+- Si el evaluador solo revisa codigo y comportamiento, el repositorio puede compartirse sin exponer la configuracion privada local.
+
+## 10. Entregables generados en esta iteracion
+
+- Actualizacion de `README.md` como documentacion tecnica.
+- Manual de usuario fuente en `docs/manual-usuario.md`.
+- Generador reproducible de PDF en `docs/generate_user_manual.py`.
+- PDF del manual en `docs/manual-usuario-todo-app.pdf`.
+- Workflow iOS en `.github/workflows/build-ios-ipa.yml`.
+- Guia de iOS en `docs/github-actions-ipa.md`.
+- `APK Debug` local en `Entregables/app-debug.apk`.
+- `APK Release firmado` local en `Entregables/app-release-signed.apk`.

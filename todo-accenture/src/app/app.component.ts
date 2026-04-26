@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { FeatureFlagsService } from './core/services/feature-flags.service';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +8,10 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
-  constructor() {}
+export class AppComponent implements OnInit {
+  constructor(private readonly featureFlagsService: FeatureFlagsService) {}
+
+  ngOnInit(): void {
+    void this.featureFlagsService.initialize();
+  }
 }

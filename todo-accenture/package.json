@@ -4,12 +4,22 @@
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
+    "env:generate:local": "node ./scripts/generate-local-env.mjs",
     "ng": "ng",
     "start": "ng serve",
+    "start:secure": "npm run env:generate:local && ng serve --configuration secure",
     "build": "ng build",
+    "build:web": "ng build",
+    "build:web:secure": "npm run env:generate:local && ng build --configuration secureproduction",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "cordova:requirements:android": "cordova requirements android",
+    "cordova:platform:add:android": "cordova platform add android",
+    "cordova:prepare:android": "cordova prepare android",
+    "build:android": "npm run build:web:secure && cordova build android",
+    "build:android:secure": "npm run build:web:secure && cordova build android --release",
+    "build:ios": "npm run build:web && cordova build ios"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +32,7 @@
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
     "@ionic/angular": "^8.0.0",
+    "firebase": "^12.12.1",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -38,9 +49,12 @@
     "@angular/compiler-cli": "^20.0.0",
     "@angular/language-service": "^20.0.0",
     "@ionic/angular-toolkit": "^12.0.0",
+    "@ionic/cli": "^7.2.1",
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
+    "cordova": "^13.0.0",
+    "cordova-android": "^15.0.0",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -54,5 +68,10 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  }
 }
