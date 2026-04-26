@@ -33,6 +33,7 @@ log.txt
 /node_modules
 npm-debug.log
 yarn-error.log
+.env.local
 
 # IDEs and editors
 .idea/
@@ -56,6 +57,8 @@ yarn-error.log
 # Miscellaneous
 /.angular
 /.angular/cache
+/src/environments/environment.local.ts
+/src/environments/environment.local.prod.ts
 .sass-cache/
 /.nx
 /.nx/cache

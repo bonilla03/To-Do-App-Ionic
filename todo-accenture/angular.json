@@ -44,8 +44,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "5kb",
+                  "maximumError": "6kb"
                 }
               ],
               "fileReplacements": [
@@ -64,6 +64,41 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "secure": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
+            },
+            "secureproduction": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "5kb",
+                  "maximumError": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "ci": {
               "progress": false
             }
@@ -78,6 +113,9 @@
             },
             "development": {
               "buildTarget": "app:build:development"
+            },
+            "secure": {
+              "buildTarget": "app:build:secure"
             },
             "ci": {
               "progress": false
@@ -136,7 +174,8 @@
   "cli": {
     "schematicCollections": [
       "@ionic/angular-toolkit"
-    ]
+    ],
+    "analytics": "cd3311ee-70b1-48d8-8c2f-1d0ab4205df3"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

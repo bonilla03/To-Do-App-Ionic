@@ -16,5 +16,6 @@ dist/
 *.p12
 *.mobileprovision
 *.cer
+Entregables/*.apk
 Thumbs.db
 Desktop.ini
